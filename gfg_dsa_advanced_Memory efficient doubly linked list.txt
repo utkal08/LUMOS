@@ -1,0 +1,306 @@
+Memory efficient doubly linked list
+Read
+Discuss
+Courses
+Practice
+Asked by Varun Bhatia. 
+Question: Write a code for implementation of doubly linked list with use of single pointer in each node. 
+Solution: 
+C++
+
+
+
+#include <iostream>
+using namespace std;
+  class Node {
+public:
+    int data;
+    Node* next;
+};
+  class CircularLinkedList {
+private:
+    Node* head;
+public:
+    CircularLinkedList() {
+        head = nullptr;
+    }
+      void insert(int data) {
+        Node* newNode = new Node();
+        newNode->data = data;
+        newNode->next = nullptr;
+          if (head == nullptr) {
+            head = newNode;
+            head->next = head;
+        } else {
+            Node* temp = head;
+            while (temp->next != head) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+            newNode->next = head;
+        }
+    }
+      void print() {
+        if (head == nullptr) {
+            cout << "List is empty" << endl;
+        } else {
+            Node* temp = head;
+            do {
+                cout << temp->data << " ";
+                temp = temp->next;
+            } while (temp != head);
+            cout << endl;
+        }
+    }
+};
+  int main() {
+    CircularLinkedList cll;
+    cll.insert(1);
+    cll.insert(2);
+    cll.insert(3);
+    cll.print();  
+    return 0;
+}
+Java
+
+
+
+class Node {
+    public int data;
+    public Node next;
+}
+  class CircularLinkedList {
+    private Node head;
+      public CircularLinkedList() {
+        head = null;
+    }
+      public void insert(int data) {
+        Node newNode = new Node();
+        newNode.data = data;
+        newNode.next = null;
+          if (head == null) {
+            head = newNode;
+            head.next = head;
+        } else {
+            Node temp = head;
+            while (temp.next != head) {
+                temp = temp.next;
+            }
+            temp.next = newNode;
+            newNode.next = head;
+        }
+    }
+      public void print() {
+        if (head == null) {
+            System.out.println("List is empty");
+        } else {
+            Node temp = head;
+            do {
+                System.out.print(temp.data + " ");
+                temp = temp.next;
+            } while (temp != head);
+            System.out.println();
+        }
+    }
+}
+  public class Main {
+    public static void main(String[] args) {
+        CircularLinkedList cll = new CircularLinkedList();
+        cll.insert(1);
+        cll.insert(2);
+        cll.insert(3);
+        cll.print();
+    }
+}
+Python3
+
+
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+  class CircularLinkedList:
+    def __init__(self):
+        self.head = None
+      def insert(self, data):
+        new_node = Node(data)
+          if self.head is None:
+            self.head = new_node
+            self.head.next = self.head
+        else:
+            temp = self.head
+            while temp.next != self.head:
+                temp = temp.next
+            temp.next = new_node
+            new_node.next = self.head
+      def print(self):
+        if self.head is None:
+            print("List is empty")
+        else:
+            temp = self.head
+            while True:
+                print(temp.data, end=" ")
+                temp = temp.next
+                if temp == self.head:
+                    break
+            print()
+  # Create a CircularLinkedList object
+cll = CircularLinkedList()
+  # Insert elements into the circular linked list
+cll.insert(1)
+cll.insert(2)
+cll.insert(3)
+  # Print the circular linked list
+cll.print()
+C#
+
+
+
+using System;
+  public class Node {
+    public int data;
+    public Node next;
+}
+  public class CircularLinkedList {
+    private Node head;
+      public CircularLinkedList() {
+        head = null;
+    }
+      public void Insert(int data) {
+        Node newNode = new Node();
+        newNode.data = data;
+        newNode.next = null;
+          if (head == null) {
+            head = newNode;
+            head.next = head;
+        } else {
+            Node temp = head;
+            while (temp.next != head) {
+                temp = temp.next;
+            }
+            temp.next = newNode;
+            newNode.next = head;
+        }
+    }
+      public void Print() {
+        if (head == null) {
+            Console.WriteLine("List is empty");
+        } else {
+            Node temp = head;
+            do {
+                Console.Write(temp.data + " ");
+                temp = temp.next;
+            } while (temp != head);
+            Console.WriteLine();
+        }
+    }
+}
+  public class Program {
+    public static void Main() {
+        CircularLinkedList cll = new CircularLinkedList();
+        cll.Insert(1);
+        cll.Insert(2);
+        cll.Insert(3);
+        cll.Print();
+    }
+}
+Javascript
+
+
+
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+  class LinkedList {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+  }
+    append(value) {
+    const newNode = new Node(value);
+      if (!this.head) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+      this.length++;
+  }
+    prepend(value) {
+    const newNode = new Node(value);
+      if (!this.head) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      newNode.next = this.head;
+      this.head = newNode;
+    }
+      this.length++;
+  }
+    insert(index, value) {
+    if (index >= this.length) {
+      this.append(value);
+    } else if (index === 0) {
+      this.prepend(value);
+    } else {
+      const newNode = new Node(value);
+      let currentNode = this.head;
+      let i = 0;
+        while (i < index - 1) {
+        currentNode = currentNode.next;
+        i++;
+      }
+        newNode.next = currentNode.next;
+      currentNode.next = newNode;
+        this.length++;
+    }
+  }
+    remove(index) {
+    if (index === 0) {
+      this.head = this.head.next;
+    } else {
+      let currentNode = this.head;
+      let i = 0;
+        while (i < index - 1) {
+        currentNode = currentNode.next;
+        i++;
+      }
+        currentNode.next = currentNode.next.next;
+        if (index === this.length - 1) {
+        this.tail = currentNode;
+      }
+    }
+      this.length--;
+  }
+    toArray() {
+    const result = [];
+    let currentNode = this.head;
+      while (currentNode) {
+      result.push(currentNode.value);
+      currentNode = currentNode.next;
+    }
+      return result;
+  }
+}
+Output: 1 2 3
+The given code implements a circular linked list data structure  using classes.
+In this implementation, a circular linked list is created by maintaining a head pointer that points to the first node of the list. Each node of the list contains a data field and a next pointer that points to the next node in the list. The last node in the list has a next pointer that points back to the head node, thus forming a cycle.
+The CircularLinkedList class has two member functions – insert and print.
+The insert function takes an integer value as input and creates a new node with the given value. If the list is empty, the new node is assigned as the head node and its next pointer is set to point to itself. Otherwise, the function traverses the list to find the last node and appends the new node to the end of the list. Finally, the next pointer of the new node is set to point back to the head node, thus completing the cycle.
+The print function traverses the circular linked list starting from the head node and prints the data field of each node until it reaches the head node again.
+Time complexity:The time complexity of inserting a new node into the circular linked list is O(n) in the worst case, where n is the number of nodes in the list. This is because the function may need to traverse the entire list to find the last node. The time complexity of printing the circular linked list is also O(n) because every node is visited exactly once.
+Space complexity:The space complexity of the circular linked list is O(n) because it requires a new node to be allocated in memory for each element inserted into the list.
+This question is solved and very well explained at http://www.linuxjournal.com/article/6828. We also recommend to read http://en.wikipedia.org/wiki/XOR_linked_list
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 18 Jul, 2023
+17

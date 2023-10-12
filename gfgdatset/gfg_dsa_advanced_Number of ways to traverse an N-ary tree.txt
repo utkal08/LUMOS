@@ -1,0 +1,147 @@
+Number of ways to traverse an N-ary tree
+Read
+Discuss
+Courses
+Practice
+Video
+Given an n-ary tree, count the number of ways to traverse an n-ary (or a Directed Acyclic Graph) tree starting from the root vertex
+Example:
+Suppose we have a given N-ary tree as shown below:
+Now we have to find the number of ways of traversing the whole tree starting from the root vertex. There can be many such ways. Some of them are listed below.
+N->M->K->J->B->F->D->E->C->H->I->L->A (kind-of depth-first traversal)
+A->B->F->D->E->K->J->G->C->H->I->N->M->L (level order traversal) 
+Note: The count of all ways to traverse is the product of factorials of the number of children of each node. Refer to the below figure for a clear understanding:
+Here,
+‘A’ has four children, so 4! permutations possible
+‘B’ has two children, so 2! permutations possible
+‘F’ has no children, so 0! permutations possible
+….. 
+And so on
+Hence all such ways are- 4 ! * 2 ! * 0 ! * 1 ! * 3 ! * 2 ! * 0 ! * 0 ! * 0 ! * 0 ! * 1 ! * 0 ! * 0 ! = 576 way
+That’s a huge number of ways and among them, only few prove to be useful, like- inorder, level-order, preorder, and postorder (arranged according to the popularity of these traversals)
+Follow the below steps to solve the problem:
+Initialize ways equal to one and create a queue of type Node and push root into it
+While the queue is not empty
+Initialize integer p equal to the front Node of the queue
+Set ways equal to ways * x!, where x is the count of p’s children
+Enqueue all the children of the Node p
+Return ways
+Below is the implementation of the above approach:
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program to find the number of ways to traverse a
+// n-ary tree starting from the root node
+#include <bits/stdc++.h>
+using namespace std;
+  // Structure of a node of an n-ary tree
+struct Node {
+    char key;
+    vector<Node*> child;
+};
+  // Utility function to create a new tree node
+Node* newNode(int key)
+{
+    Node* temp = new Node;
+    temp->key = key;
+    return temp;
+}
+  // Utility Function to find factorial of given number
+int factorial(int n)
+{
+    if (n == 0)
+        return 1;
+    return n * factorial(n - 1);
+}
+  // Function to calculate the number of ways of traversing
+// the n-ary starting from root.
+// This function is just a modified breadth-first search.
+// We can use a depth-first search too.
+int calculateWays(Node* root)
+{
+    int ways = 1; // Initialize result
+      // If the tree is empty there is no way of traversing
+    // the tree.
+    if (root == NULL)
+        return 0;
+      // Create a queue and enqueue root to it.
+    queue<Node*> q;
+    q.push(root);
+      // Level order traversal.
+    while (!q.empty()) {
+        // Dequeue an item from queue and print it
+        Node* p = q.front();
+        q.pop();
+          // The number of ways is the product of
+        // factorials of number of children of each node.
+        ways = ways * (factorial(p->child.size()));
+          // Enqueue all childrent of the dequeued item
+        for (int i = 0; i < p->child.size(); i++)
+            q.push(p->child[i]);
+    }
+      return (ways);
+}
+  // Driver code
+int main()
+{
+    /*   Let us create below tree
+     *           A
+     *         / /  \  \
+     *       B  F   D  E
+     *      / \     |  /|\
+     *     K  J    G  C H I
+     *      /\            \
+     *    N   M            L
+     */
+      Node* root = newNode('A');
+    (root->child).push_back(newNode('B'));
+    (root->child).push_back(newNode('F'));
+    (root->child).push_back(newNode('D'));
+    (root->child).push_back(newNode('E'));
+    (root->child[0]->child).push_back(newNode('K'));
+    (root->child[0]->child).push_back(newNode('J'));
+    (root->child[2]->child).push_back(newNode('G'));
+    (root->child[3]->child).push_back(newNode('C'));
+    (root->child[3]->child).push_back(newNode('H'));
+    (root->child[3]->child).push_back(newNode('I'));
+    (root->child[0]->child[0]->child)
+        .push_back(newNode('N'));
+    (root->child[0]->child[0]->child)
+        .push_back(newNode('M'));
+    (root->child[3]->child[2]->child)
+        .push_back(newNode('L'));
+      cout << calculateWays(root);
+    ;
+      return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+576
+Time Complexity: O(N2). We can optimize the solution to work in O(N) time by per-computing factorials of all numbers from 1 to N
+Auxiliary Space: O(N)
+Common Pitfalls: 
+Since products of factorials can tend to grow very huge, so it may overflow. It is preferable to use data types like- unsigned long long int in C/C++, as the number of ways can never be a negative number. In Java and Python, there are Big Integers to take care of overflows
+This article is contributed by Rachit Belwariar. If you like GeeksforGeeks and would like to contribute, you can also write an article and mail your article to review-team@geeksforgeeks.org. See your article appearing on the GeeksforGeeks main page and help other Geeks.
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 08 Feb, 2023
+2

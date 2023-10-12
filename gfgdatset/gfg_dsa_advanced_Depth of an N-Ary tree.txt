@@ -1,0 +1,347 @@
+Depth of an N-Ary tree
+Read
+Discuss
+Courses
+Practice
+Video
+Given an N-Ary tree, find depth of the tree. An N-Ary tree is a tree in which nodes can have at most N children.
+Algorithm
+Here is the algorithm for finding the depth of an N-Ary tree:
+1)Define a struct for the nodes of the N-ary tree with a key and a vector of pointers to its child nodes.
+2)Create a utility function to create a new node with the given key.
+3)Define a function depthOfTree that takes in a pointer to a Node and returns the depth of the tree.
+4)If the pointer to the Node is null, return 0.
+5)Initialize a variable maxdepth to 0.
+6)Iterate through the vector of child nodes of the current Node and for each child node, recursively call depthOfTree function on the child and find the maximum depth.
+7)Update the maxdepth variable to be the maximum of the current maxdepth and the depth of the child node.
+8)Return the maxdepth plus 1 as the depth of the tree.
+9)In the main function, create an N-ary tree and call depthOfTree function on the root node of the tree to get the depth.
+10)Print the depth of the tree.
+Examples:
+Example 1: 
+  Example 2: 
+  N-Ary tree can be traversed just like a normal tree. We just have to consider all childs of a given node and recursively call that function on every node. 
+Implementation:
+C++
+
+
+
+// C++ program to find the height of 
+// an N-ary tree 
+#include <bits/stdc++.h> 
+using namespace std; 
+   // Structure of a node of an n-ary tree 
+struct Node 
+{ 
+   char key; 
+   vector<Node *> child; 
+}; 
+   // Utility function to create a new tree node 
+Node *newNode(int key) 
+{ 
+   Node *temp = new Node; 
+   temp->key = key; 
+   return temp; 
+} 
+   // Function that will return the depth 
+// of the tree 
+int depthOfTree(struct Node *ptr) 
+{ 
+    // Base case 
+    if (!ptr) 
+        return 0; 
+       // Check for all children and find 
+    // the maximum depth 
+    int maxdepth = 0; 
+    for (vector<Node*>::iterator it = ptr->child.begin(); 
+                              it != ptr->child.end(); it++) 
+        maxdepth = max(maxdepth, depthOfTree(*it)); 
+       return maxdepth + 1 ; 
+} 
+   // Driver program 
+int main() 
+{ 
+   /*   Let us create below tree 
+   *             A 
+   *         / /  \  \ 
+   *       B  F   D  E 
+   *      / \    |  /|\ 
+   *     K  J    G  C H I 
+   *      /\            \ 
+   *    N   M            L 
+   */
+      Node *root = newNode('A'); 
+   (root->child).push_back(newNode('B')); 
+   (root->child).push_back(newNode('F')); 
+   (root->child).push_back(newNode('D')); 
+   (root->child).push_back(newNode('E')); 
+   (root->child[0]->child).push_back(newNode('K')); 
+   (root->child[0]->child).push_back(newNode('J')); 
+   (root->child[2]->child).push_back(newNode('G')); 
+   (root->child[3]->child).push_back(newNode('C')); 
+   (root->child[3]->child).push_back(newNode('H')); 
+   (root->child[3]->child).push_back(newNode('I')); 
+   (root->child[0]->child[0]->child).push_back(newNode('N')); 
+   (root->child[0]->child[0]->child).push_back(newNode('M')); 
+   (root->child[3]->child[2]->child).push_back(newNode('L')); 
+      cout << depthOfTree(root) << endl; 
+      return 0; 
+} 
+Java
+
+
+
+// Java program to find the height of 
+// an N-ary tree 
+import java.util.*; 
+   class GFG 
+{ 
+   // Structure of a node of an n-ary tree 
+static class Node 
+{ 
+    char key; 
+    Vector<Node > child; 
+}; 
+   // Utility function to create a new tree node 
+static Node newNode(int key) 
+{ 
+    Node temp = new Node(); 
+    temp.key = (char) key; 
+    temp.child = new Vector<Node>(); 
+    return temp; 
+} 
+   // Function that will return the depth 
+// of the tree 
+static int depthOfTree(Node ptr) 
+{ 
+    // Base case 
+    if (ptr == null) 
+        return 0; 
+       // Check for all children and find 
+    // the maximum depth 
+    int maxdepth = 0; 
+    for (Node it : ptr.child) 
+        maxdepth = Math.max(maxdepth,  
+                            depthOfTree(it)); 
+       return maxdepth + 1 ; 
+} 
+   // Driver Code 
+public static void main(String[] args) 
+{ 
+    /* Let us create below tree 
+    *             A 
+    *         / / \ \ 
+    *     B F D E 
+    *     / \ | /|\ 
+    *     K J G C H I 
+    *     /\         \ 
+    * N M         L 
+    */
+           Node root = newNode('A'); 
+    (root.child).add(newNode('B')); 
+    (root.child).add(newNode('F')); 
+    (root.child).add(newNode('D')); 
+    (root.child).add(newNode('E')); 
+    (root.child.get(0).child).add(newNode('K')); 
+    (root.child.get(0).child).add(newNode('J')); 
+    (root.child.get(2).child).add(newNode('G')); 
+    (root.child.get(3).child).add(newNode('C')); 
+    (root.child.get(3).child).add(newNode('H')); 
+    (root.child.get(3).child).add(newNode('I')); 
+    (root.child.get(0).child.get(0).child).add(newNode('N')); 
+    (root.child.get(0).child.get(0).child).add(newNode('M')); 
+    (root.child.get(3).child.get(2).child).add(newNode('L')); 
+           System.out.print(depthOfTree(root) + "\n"); 
+} 
+} 
+   // This code is contributed by Rajput-Ji 
+Python3
+
+
+
+# Python program to find the height of 
+# an N-ary tree 
+   # Structure of a node of an n-ary tree 
+class Node: 
+    def __init__(self, key): 
+        self.key = key 
+        self.child = [] 
+   # Utility function to create a new tree node 
+def new_node(key): 
+    temp = Node(key) 
+    return temp 
+   # Function that will return the depth 
+# of the tree 
+def depth_of_tree(ptr): 
+    # Base case 
+    if ptr is None: 
+        return 0
+       # Check for all children and find 
+    # the maximum depth 
+    maxdepth = 0
+    for child in ptr.child: 
+        maxdepth = max(maxdepth, depth_of_tree(child)) 
+       return maxdepth + 1
+   # Driver program 
+if __name__ == '__main__': 
+    """ Let us create below tree 
+            A 
+        / / \ \ 
+        B F D E 
+        / \ | /|\ 
+        K J G C H I 
+        /\         \ 
+        N M         L 
+    """
+       root = new_node('A') 
+    root.child.extend([new_node('B'), new_node('F'), new_node('D'), new_node('E')]) 
+    root.child[0].child.extend([new_node('K'), new_node('J')]) 
+    root.child[2].child.append(new_node('G')) 
+    root.child[3].child.extend([new_node('C'), new_node('H'), new_node('I')]) 
+    root.child[0].child[0].child.extend([new_node('N'), new_node('M')]) 
+    root.child[3].child[2].child.append(new_node('L')) 
+       print(depth_of_tree(root)) 
+C#
+
+
+
+// C# program to find the height of 
+// an N-ary tree 
+using System; 
+using System.Collections.Generic; 
+   class GFG 
+{ 
+   // Structure of a node of an n-ary tree 
+public class Node 
+{ 
+    public char key; 
+    public List<Node > child; 
+}; 
+   // Utility function to create a new tree node 
+static Node newNode(int key) 
+{ 
+    Node temp = new Node(); 
+    temp.key = (char) key; 
+    temp.child = new List<Node>(); 
+    return temp; 
+} 
+   // Function that will return the depth 
+// of the tree 
+static int depthOfTree(Node ptr) 
+{ 
+    // Base case 
+    if (ptr == null) 
+        return 0; 
+       // Check for all children and find 
+    // the maximum depth 
+    int maxdepth = 0; 
+    foreach (Node it in ptr.child) 
+        maxdepth = Math.Max(maxdepth,  
+                            depthOfTree(it)); 
+       return maxdepth + 1 ; 
+} 
+   // Driver Code 
+public static void Main(String[] args) 
+{ 
+           /* Let us create below tree 
+    *             A 
+    *         / / \ \ 
+    *     B F D E 
+    *     / \ | /|\ 
+    *     K J G C H I 
+    *     /\         \ 
+    * N M         L 
+    */
+    Node root = newNode('A'); 
+    (root.child).Add(newNode('B')); 
+    (root.child).Add(newNode('F')); 
+    (root.child).Add(newNode('D')); 
+    (root.child).Add(newNode('E')); 
+    (root.child[0].child).Add(newNode('K')); 
+    (root.child[0].child).Add(newNode('J')); 
+    (root.child[2].child).Add(newNode('G')); 
+    (root.child[3].child).Add(newNode('C')); 
+    (root.child[3].child).Add(newNode('H')); 
+    (root.child[3].child).Add(newNode('I')); 
+    (root.child[0].child[0].child).Add(newNode('N')); 
+    (root.child[0].child[0].child).Add(newNode('M')); 
+    (root.child[3].child[2].child).Add(newNode('L')); 
+           Console.Write(depthOfTree(root) + "\n"); 
+} 
+} 
+   // This code is contributed by Rajput-Ji 
+Javascript
+
+
+
+   // JavaScript program to find the height of 
+// an N-ary tree 
+   // Structure of a node of an n-ary tree 
+class Node 
+{ 
+    constructor() 
+    { 
+        this.key = 0; 
+        this.child = []; 
+    } 
+}; 
+   // Utility function to create a new tree node 
+function newNode(key) 
+{ 
+    var temp = new Node(); 
+    temp.key =  key; 
+    temp.child = []; 
+    return temp; 
+} 
+   // Function that will return the depth 
+// of the tree 
+function depthOfTree(ptr) 
+{ 
+    // Base case 
+    if (ptr == null) 
+        return 0; 
+       // Check for all children and find 
+    // the maximum depth 
+    var maxdepth = 0; 
+    for(var it of ptr.child) 
+        maxdepth = Math.max(maxdepth,  
+                            depthOfTree(it)); 
+       return maxdepth + 1 ; 
+} 
+   // Driver Code 
+   /* Let us create below tree 
+*             A 
+*         / / \ \ 
+*     B F D E 
+*     / \ | /|\ 
+*     K J G C H I 
+*     /\         \ 
+* N M         L 
+*/
+var root = newNode('A'); 
+(root.child).push(newNode('B')); 
+(root.child).push(newNode('F')); 
+(root.child).push(newNode('D')); 
+(root.child).push(newNode('E')); 
+(root.child[0].child).push(newNode('K')); 
+(root.child[0].child).push(newNode('J')); 
+(root.child[2].child).push(newNode('G')); 
+(root.child[3].child).push(newNode('C')); 
+(root.child[3].child).push(newNode('H')); 
+(root.child[3].child).push(newNode('I')); 
+(root.child[0].child[0].child).push(newNode('N')); 
+(root.child[0].child[0].child).push(newNode('M')); 
+(root.child[3].child[2].child).push(newNode('L')); 
+document.write(depthOfTree(root) + "<br>"); 
+      Output
+4
+Time complexity: O(n)
+Auxiliary Space: O(n)
+This article is contributed by Shubham Gupta. If you like GeeksforGeeks and would like to contribute, you can also write an article using write.geeksforgeeks.org or mail your article to review-team@geeksforgeeks.org. See your article appearing on the GeeksforGeeks main page and help other Geeks. 
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 12 Sep, 2023
+9

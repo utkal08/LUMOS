@@ -1,0 +1,489 @@
+Longest Common Prefix using Trie
+Read
+Discuss
+Courses
+Practice
+Given a set of strings, find the longest common prefix.
+Input  : {“geeksforgeeks”, “geeks”, “geek”, “geezer”}
+Output : "gee"
+
+Input  : {"apple", "ape", "april"}
+Output : "ap"
+Previous Approaches : Word by Word Matching , Character by Character Matching, Divide and Conquer , Binary Search. In this article, an approach using Trie date structure is discussed. Steps:
+Insert all the words one by one in the trie. After inserting we perform a walk on the trie.
+In this walk, go deeper until we find a node having more than 1 children(branching occurs) or 0 children (one of the string gets exhausted). This is because the characters (nodes in trie) which are present in the longest common prefix must be the single child of its parent, i.e- there should not be branching in any of these nodes.
+Algorithm Illustration considering strings as – “geeksforgeeks”, “geeks”, “geek”, “geezer”
+Recommended: Please solve it on “PRACTICE ” first, before moving on to the solution.
+C++
+
+
+
+// A Program to find the longest common
+// prefix of the given words
+  #include<bits/stdc++.h>
+using namespace std;
+  // Alphabet size (# of symbols)
+#define ALPHABET_SIZE (26)
+  // Converts key current character into index
+// use only 'a' through 'z' and lower case
+#define CHAR_TO_INDEX(c) ((int)c - (int)'a')
+  // Trie node
+struct TrieNode
+{
+    struct TrieNode *children[ALPHABET_SIZE];
+      // isLeaf is true if the node represents
+    // end of a word
+    bool isLeaf;
+};
+  // Returns new trie node (initialized to NULLs)
+struct TrieNode *getNode(void)
+{
+    struct TrieNode *pNode = new TrieNode;
+      if (pNode)
+    {
+        int i;
+          pNode->isLeaf = false;
+          for (i = 0; i < ALPHABET_SIZE; i++)
+            pNode->children[i] = NULL;
+    }
+      return pNode;
+}
+  // If not present, inserts the key into the trie
+// If the key is a prefix of trie node, just marks leaf node
+void insert(struct TrieNode *root, string key)
+{
+    int length = key.length();
+    int index;
+      struct TrieNode *pCrawl = root;
+      for (int level = 0; level < length; level++)
+    {
+        index = CHAR_TO_INDEX(key[level]);
+        if (!pCrawl->children[index])
+            pCrawl->children[index] = getNode();
+          pCrawl = pCrawl->children[index];
+    }
+      // mark last node as leaf
+    pCrawl->isLeaf = true;
+}
+  // Counts and returns the number of children of the
+// current node
+int countChildren(struct TrieNode *node, int *index)
+{
+    int count = 0;
+    for (int i=0; i<ALPHABET_SIZE; i++)
+    {
+        if (node->children[i] != NULL)
+        {
+            count++;
+            *index = i;
+        }
+    }
+    return (count);
+}
+  // Perform a walk on the trie and return the
+// longest common prefix string
+string walkTrie(struct TrieNode *root)
+{
+    struct TrieNode *pCrawl = root;
+    int index;
+    string prefix;
+      while (countChildren(pCrawl, &index) == 1 &&
+            pCrawl->isLeaf == false)
+    {
+        pCrawl = pCrawl->children[index];
+        prefix.push_back('a'+index);
+    }
+    return (prefix);
+}
+  // A Function to construct trie
+void constructTrie(string arr[], int n, struct TrieNode *root)
+{
+    for (int i = 0; i < n; i++)
+        insert (root, arr[i]);
+    return;
+}
+  // A Function that returns the longest common prefix
+// from the array of strings
+string commonPrefix(string arr[], int n)
+{
+    struct TrieNode *root = getNode();
+    constructTrie(arr, n, root);
+      // Perform a walk on the trie
+    return walkTrie(root);
+}
+  // Driver program to test above function
+int main()
+{
+    string arr[] = {"geeksforgeeks", "geeks",
+                    "geek", "geezer"};
+    int n = sizeof (arr) / sizeof (arr[0]);
+      string ans = commonPrefix(arr, n);
+      if (ans.length())
+        cout << "The longest common prefix is "
+             << ans;
+    else
+        cout << "There is no common prefix";
+    return (0);
+}
+Java
+
+
+
+// Java Program to find the longest common
+// prefix of the given words
+public class Longest_common_prefix {
+          // Alphabet size (# of symbols)
+    static final int ALPHABET_SIZE = 26;
+           // Trie node
+    static class TrieNode
+    {
+        TrieNode[] children = new TrieNode[ALPHABET_SIZE];
+               // isLeaf is true if the node represents
+        // end of a word
+        boolean isLeaf;
+                  // constructor
+        public TrieNode() {
+            isLeaf = false;
+            for (int i = 0; i < ALPHABET_SIZE; i++)
+                children[i] = null;
+        }
+    };
+           static TrieNode root;
+    static int indexs;
+           // If not present, inserts the key into the trie
+    // If the key is a prefix of trie node, just marks
+    // leaf node
+    static void insert(String key)
+    {
+        int length = key.length();
+        int index;
+               TrieNode pCrawl = root;
+               for (int level = 0; level < length; level++)
+        {
+            index = key.charAt(level) - 'a';
+            if (pCrawl.children[index] == null)
+                pCrawl.children[index] = new TrieNode();
+                   pCrawl = pCrawl.children[index];
+        }
+               // mark last node as leaf
+        pCrawl.isLeaf = true;
+    }
+           // Counts and returns the number of children of the
+    // current node
+    static int countChildren(TrieNode node)
+    {
+        int count = 0;
+        for (int i=0; i<ALPHABET_SIZE; i++)
+        {
+            if (node.children[i] != null)
+            {
+                count++;
+                indexs = i;
+            }
+        }
+        return (count);
+    }
+           // Perform a walk on the trie and return the
+    // longest common prefix string
+    static String walkTrie()
+    {
+        TrieNode pCrawl = root;
+        indexs = 0;
+        String prefix = "";
+               while (countChildren(pCrawl) == 1 &&
+                pCrawl.isLeaf == false)
+        {
+            pCrawl = pCrawl.children[indexs];
+            prefix += (char)('a' + indexs);
+        }
+        return prefix;
+    }
+           // A Function to construct trie
+    static void constructTrie(String arr[], int n)
+    {
+        for (int i = 0; i < n; i++)
+            insert (arr[i]);
+        return;
+    }
+           // A Function that returns the longest common prefix
+    // from the array of strings
+    static String commonPrefix(String arr[], int n)
+    {
+        root = new TrieNode();
+        constructTrie(arr, n);
+               // Perform a walk on the trie
+        return walkTrie();
+    }
+           // Driver program to test above function
+    public static void main(String args[])
+    {
+        String arr[] = {"geeksforgeeks", "geeks",
+                        "geek", "geezer"};
+        int n = arr.length;
+               String ans = commonPrefix(arr, n);
+               if (ans.length() != 0)
+            System.out.println("The longest common prefix is "+ans);
+        else
+            System.out.println("There is no common prefix");
+    }
+}
+// This code is contributed by Sumit Ghosh
+Python3
+
+
+
+# Python 3 program to find the longest common prefix
+ALPHABET_SIZE = 26
+indexs = 0
+class TrieNode:
+    # constructor
+    def __init__(self):
+        self.isLeaf = False
+        self.children = [None]*ALPHABET_SIZE
+  # Function to facilitate insertion in Trie
+# If not present, insert the node in the Trie
+def insert(key, root):
+    pCrawl = root
+    for level in range(len(key)):
+        index = ord(key[level]) - ord('a')
+        if pCrawl.children[index] == None:
+            pCrawl.children[index] = TrieNode()
+        pCrawl = pCrawl.children[index]
+    pCrawl.isLeaf = True
+  # Function to construct Trie
+def constructTrie(arr, n, root):
+    for i in range(n):
+        insert(arr[i], root)
+  # Counts and returns number of children of the node
+def countChildren(node):
+    count = 0
+    for i in range(ALPHABET_SIZE):
+        if node.children[i] != None:
+            count +=1
+            # Keeping track of diversion in the trie
+            global indexs
+            indexs = i
+    return count
+      # Perform walk on trie and return longest common prefix 
+def walkTrie(root):
+    pCrawl = root
+    prefix = ""
+    while(countChildren(pCrawl) == 1 and pCrawl.isLeaf == False):
+        pCrawl = pCrawl.children[indexs]
+        prefix += chr(97 + indexs)
+    return prefix or -1
+  # Function that returns longest common prefix 
+def commonPrefix(arr, n, root):
+    constructTrie(arr, n, root)
+    return walkTrie(root)
+  # Driver code to test the code
+n = 4
+arr = ["geeksforgeeks", "geeks", "geek", "geezer"]
+root = TrieNode()
+print(commonPrefix(arr,n, root))
+  # This code is Contributed by Akshay Jain (DA-IICT)
+C#
+
+
+
+// C# Program to find the longest common
+// prefix of the given words
+using System;
+      public class Longest_common_prefix 
+{
+          // Alphabet size (# of symbols)
+    static readonly int ALPHABET_SIZE = 26;
+          // Trie node
+    public class TrieNode
+    {
+        public TrieNode[] children = new TrieNode[ALPHABET_SIZE];
+              // isLeaf is true if the node represents
+        // end of a word
+        public bool isLeaf;
+                  // constructor
+        public TrieNode() 
+        {
+            isLeaf = false;
+            for (int i = 0; i < ALPHABET_SIZE; i++)
+                children[i] = null;
+        }
+    };
+          static TrieNode root;
+    static int indexs;
+          // If not present, inserts the key into the trie
+    // If the key is a prefix of trie node, just marks
+    // leaf node
+    static void insert(String key)
+    {
+        int length = key.Length;
+        int index;
+              TrieNode pCrawl = root;
+              for (int level = 0; level < length; level++)
+        {
+            index = key[level] - 'a';
+            if (pCrawl.children[index] == null)
+                pCrawl.children[index] = new TrieNode();
+                  pCrawl = pCrawl.children[index];
+        }
+              // mark last node as leaf
+        pCrawl.isLeaf = true;
+    }
+          // Counts and returns the number of children of the
+    // current node
+    static int countChildren(TrieNode node)
+    {
+        int count = 0;
+        for (int i = 0; i < ALPHABET_SIZE; i++)
+        {
+            if (node.children[i] != null)
+            {
+                count++;
+                indexs = i;
+            }
+        }
+        return (count);
+    }
+          // Perform a walk on the trie and return the
+    // longest common prefix string
+    static String walkTrie()
+    {
+        TrieNode pCrawl = root;
+        indexs = 0;
+        String prefix = "";
+              while (countChildren(pCrawl) == 1 &&
+                pCrawl.isLeaf == false)
+        {
+            pCrawl = pCrawl.children[indexs];
+            prefix += (char)('a' + indexs);
+        }
+        return prefix;
+    }
+          // A Function to construct trie
+    static void constructTrie(String []arr, int n)
+    {
+        for (int i = 0; i < n; i++)
+            insert (arr[i]);
+        return;
+    }
+          // A Function that returns the longest common prefix
+    // from the array of strings
+    static String commonPrefix(String []arr, int n)
+    {
+        root = new TrieNode();
+        constructTrie(arr, n);
+              // Perform a walk on the trie
+        return walkTrie();
+    }
+          // Driver program to test above function
+    public static void Main(String []args)
+    {
+        String []arr = {"geeksforgeeks", "geeks",
+                        "geek", "geezer"};
+        int n = arr.Length;
+              String ans = commonPrefix(arr, n);
+              if (ans.Length != 0)
+            Console.WriteLine("The longest common prefix is "+ans);
+        else
+            Console.WriteLine("There is no common prefix");
+    }
+}
+  // This code contributed by Rajput-Ji
+Javascript
+
+
+
+    // Javascript Program to find the longest common
+    // prefix of the given words
+          const ALPHABET_SIZE = 26;
+          // Converts key current character into index
+    // use only 'a' through 'z' and lower case
+    const CHAR_TO_INDEX = (c) => c.charCodeAt(0) - 'a'.charCodeAt(0);
+          // Trie node
+    class TrieNode {
+      constructor() {
+        this.children = Array(ALPHABET_SIZE).fill(null);
+        this.isLeaf = false;
+      }
+    }
+          // Returns new trie node (initialized to NULLs)
+    const getNode = () => new TrieNode();
+          // If not present, inserts the key into the trie
+    // If the key is a prefix of trie node, just marks leaf node
+    const insert = (root, key) => {
+      let length = key.length;
+      let index;
+            let pCrawl = root;
+            for (let level = 0; level < length; level++) {
+        index = CHAR_TO_INDEX(key[level]);
+        if (!pCrawl.children[index]) {
+          pCrawl.children[index] = getNode();
+        }
+              pCrawl = pCrawl.children[index];
+      }
+            // mark last node as leaf
+      pCrawl.isLeaf = true;
+    };
+          // Counts and returns the number of children of the
+    // current node
+    const countChildren = (node, index) => {
+      let count = 0;
+      for (let i = 0; i < ALPHABET_SIZE; i++) {
+        if (node.children[i] != null) {
+          count++;
+          index[0] = i;
+        }
+      }
+      return count;
+    };
+          // Perform a walk on the trie and return the
+    // longest common prefix string
+    const walkTrie = (root) => {
+      let pCrawl = root;
+      let index = [];
+      let prefix = "";
+            while (countChildren(pCrawl, index) === 1 && !pCrawl.isLeaf) {
+        pCrawl = pCrawl.children[index[0]];
+        prefix += String.fromCharCode("a".charCodeAt(0) + index[0]);
+      }
+      return prefix;
+    };
+          // A Function to construct trie
+    function constructTrie(arr, n, root) {
+      for (let i = 0; i < n; i++) {
+        insert(root, arr[i]);
+      }
+      return;
+    };
+          // A Function that returns the longest common prefix
+    // from the array of strings
+    function commonPrefix(arr, n) {
+      let root = getNode();
+      constructTrie(arr, n, root);
+            // Perform a walk on the trie
+      return walkTrie(root);
+    };
+          // Driver program to test above function
+      let arr = ["geeksforgeeks", "geeks", "geek", "geezer"];
+      let n = arr.length;
+            let ans = commonPrefix(arr, n);
+            if (ans.length) {
+        document.write("The longest common prefix is "+ans);
+      }
+      else
+      {
+          document.write("There is no common prefix");
+      }
+                  // This code is contributed by Aman Kumar.
+Output :
+The longest common prefix is gee
+Time Complexity : Inserting all the words in the trie takes O(MN) time and performing a walk on the trie takes O(M) time, where-
+N = Number of strings
+M = Length of the largest string
+Auxiliary Space: To store all the strings we need to allocate O(26*M*N) ~ O(MN) space for the Trie.   This article is contributed by Rachit Belwariar. If you like GeeksforGeeks and would like to contribute, you can also write an article using write.geeksforgeeks.org or mail your article to review-team@geeksforgeeks.org. See your article appearing on the GeeksforGeeks main page and help other Geeks. Please write comments if you find anything incorrect, or you want to share more information about the topic discussed above
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 15 Feb, 2023
+25

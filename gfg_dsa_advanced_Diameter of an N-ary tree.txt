@@ -1,0 +1,333 @@
+Diameter of an N-ary tree
+Read
+Discuss
+Courses
+Practice
+The diameter of an N-ary tree is the longest path present between any two nodes of the tree. These two nodes must be two leaf nodes. The following examples have the longest path[diameter] shaded.
+Example 1:
+Example 2: 
+Prerequisite: Diameter of a binary tree.
+ 
+The path can either start from one of the nodes and go up to one of the LCAs of these nodes and again come down to the deepest node of some other subtree or can exist as a diameter of one of the child of the current node. 
+The solution will exist in any one of these: 
+Diameter of one of the children of the current node 
+ Sum of Height of the highest two subtree + 1 
+Implementation:
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program to find the height of an N-ary 
+// tree 
+#include <bits/stdc++.h> 
+using namespace std; 
+   // Structure of a node of an n-ary tree 
+struct Node 
+{ 
+    char key; 
+    vector<Node *> child; 
+}; 
+   // Utility function to create a new tree node 
+Node *newNode(int key) 
+{ 
+    Node *temp = new Node; 
+    temp->key = key; 
+    return temp; 
+} 
+   // Utility function that will return the depth 
+// of the tree 
+int depthOfTree(struct Node *ptr) 
+{ 
+    // Base case 
+    if (!ptr) 
+        return 0; 
+       int maxdepth = 0; 
+       // Check for all children and find 
+    // the maximum depth 
+    for (vector<Node*>::iterator it = ptr->child.begin(); 
+                           it != ptr->child.end(); it++) 
+           maxdepth = max(maxdepth , depthOfTree(*it)); 
+       return maxdepth + 1; 
+} 
+   // Function to calculate the diameter 
+// of the tree 
+int diameter(struct Node *ptr) 
+{ 
+    // Base case 
+    if (!ptr) 
+        return 0; 
+       // Find top two highest children 
+    int max1 = 0, max2 = 0; 
+    for (vector<Node*>::iterator it = ptr->child.begin(); 
+                          it != ptr->child.end(); it++) 
+    { 
+        int h = depthOfTree(*it); 
+        if (h > max1) 
+           max2 = max1, max1 = h; 
+        else if (h > max2) 
+           max2 = h; 
+    } 
+       // Iterate over each child for diameter 
+    int maxChildDia = 0; 
+    for (vector<Node*>::iterator it = ptr->child.begin(); 
+                           it != ptr->child.end(); it++) 
+        maxChildDia = max(maxChildDia, diameter(*it)); 
+       return max(maxChildDia, max1 + max2 + 1); 
+} 
+   // Driver program 
+int main() 
+{ 
+    /*   Let us create below tree 
+    *           A 
+    *         / /  \  \ 
+    *       B  F   D  E 
+    *      / \     |  /|\ 
+    *     K  J    G  C H I 
+    *      /\            \ 
+    *    N   M            L 
+    */
+       Node *root = newNode('A'); 
+    (root->child).push_back(newNode('B')); 
+    (root->child).push_back(newNode('F')); 
+    (root->child).push_back(newNode('D')); 
+    (root->child).push_back(newNode('E')); 
+    (root->child[0]->child).push_back(newNode('K')); 
+    (root->child[0]->child).push_back(newNode('J')); 
+    (root->child[2]->child).push_back(newNode('G')); 
+    (root->child[3]->child).push_back(newNode('C')); 
+    (root->child[3]->child).push_back(newNode('H')); 
+    (root->child[3]->child).push_back(newNode('I')); 
+    (root->child[0]->child[0]->child).push_back(newNode('N')); 
+    (root->child[0]->child[0]->child).push_back(newNode('M')); 
+    (root->child[3]->child[2]->child).push_back(newNode('L')); 
+       cout << diameter(root) << endl; 
+       return 0; 
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+7
+Time Complexity : O( N )
+Space Complexity : O( N )
+Optimizations to above solution:  We can find diameter without calculating depth of the tree making small changes in the above solution, similar to finding diameter of binary tree.
+Implementation:
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program to find the height of an N-ary 
+// tree 
+#include <bits/stdc++.h> 
+using namespace std; 
+   // Structure of a node of an n-ary tree 
+struct Node 
+{ 
+    char key; 
+    vector<Node *> child; 
+}; 
+   // Utility function to create a new tree node 
+Node *newNode(int key) 
+{ 
+    Node *temp = new Node; 
+    temp->key = key; 
+    return temp; 
+} 
+   int diameter(struct Node *ptr,int &diameter_of_tree) 
+{ 
+    // Base case 
+    if (!ptr) 
+        return 0; 
+       // Find top two highest children 
+    int max1 = 0, max2 = 0; 
+    for (vector<Node*>::iterator it = ptr->child.begin();it != ptr->child.end(); it++) 
+    { 
+        int h = diameter(*it,diameter_of_tree); 
+        if (h > max1) 
+        max2 = max1, max1 = h; 
+        else if (h > max2) 
+        max2 = h; 
+    } 
+       // Find whether our node can be part of diameter 
+    diameter_of_tree = max(max1 + max2 + 1,diameter_of_tree); 
+       return max(max1,max2) + 1; 
+} 
+   int main() 
+{ 
+          /* Let us create below tree 
+         *            A 
+         *         / / \ \ 
+         *        B F   D E 
+         *       / \   / /|\ 
+         *      K   J G C H I 
+         *     /\         | 
+         *    N  M        L 
+         */
+    Node *root = newNode('A'); 
+    (root->child).push_back(newNode('B')); 
+    (root->child).push_back(newNode('F')); 
+    (root->child).push_back(newNode('D')); 
+    (root->child).push_back(newNode('E')); 
+    (root->child[0]->child).push_back(newNode('K')); 
+    (root->child[0]->child).push_back(newNode('J')); 
+    (root->child[2]->child).push_back(newNode('G')); 
+    (root->child[3]->child).push_back(newNode('C')); 
+    (root->child[3]->child).push_back(newNode('H')); 
+    (root->child[3]->child).push_back(newNode('I')); 
+    (root->child[0]->child[0]->child).push_back(newNode('N')); 
+    (root->child[0]->child[0]->child).push_back(newNode('M')); 
+    (root->child[3]->child[2]->child).push_back(newNode('L')); 
+           // for storing diameter 
+    int diameter_of_tree = 0; 
+           diameter(root,diameter_of_tree); 
+           cout << diameter_of_tree << endl; 
+       return 0; 
+} 
+// This code is improved by bhuvan
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+7
+Time Complexity: O(N^2)
+Auxiliary Space: O(N+H) where N is the number of nodes in tree and H is the height of the tree.
+A different optimized solution: Longest path in an undirected tree
+Another Approach to get diameter using DFS in one traversal:
+The diameter of a tree can be calculated as for every node
+The current node isn’t part of diameter (i.e Diameter lies on one of the children of the current node).
+The current node is part of diameter (i.e Diameter passes through the current node).
+Node: Adjacency List has been used to store the Tree.
+Below is the implementation of the above approach:
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ implementation to find 
+// diameter of a tree using 
+// DFS in ONE TRAVERSAL 
+   #include <bits/stdc++.h> 
+using namespace std; 
+#define maxN 10005 
+   // The array to store the 
+// height of the nodes 
+int height[maxN]; 
+   // Adjacency List to store 
+// the tree 
+vector<int> tree[maxN]; 
+   // variable to store diameter 
+// of the tree 
+int diameter = 0; 
+   // Function to add edge between 
+// node u to node v 
+void addEdge(int u, int v) 
+{ 
+    // add edge from u to v 
+    tree[u].push_back(v); 
+       // add edge from v to u 
+    tree[v].push_back(u); 
+} 
+   void dfs(int cur, int par) 
+{ 
+    // Variables to store the height of children 
+    // of cur node with maximum heights 
+    int max1 = 0; 
+    int max2 = 0; 
+       // going in the adjacency list of the current node 
+    for (auto u : tree[cur]) { 
+                   // if that node equals parent discard it 
+        if (u == par) 
+            continue; 
+           // calling dfs for child node 
+        dfs(u, cur); 
+           // calculating height of nodes 
+        height[cur] = max(height[cur], height[u]); 
+           // getting the height of children 
+        // of cur node with maximum height 
+        if (height[u] >= max1) { 
+            max2 = max1; 
+            max1 = height[u]; 
+        } 
+        else if (height[u] > max2) { 
+            max2 = height[u]; 
+        } 
+    } 
+       height[cur] += 1; 
+       // Diameter of a tree can be calculated as 
+    // diameter passing through the node 
+    // diameter doesn't includes the cur node 
+    diameter = max(diameter, height[cur]); 
+    diameter = max(diameter, max1 + max2 + 1); 
+} 
+   // Driver Code 
+int main() 
+{ 
+    // n is the number of nodes in tree 
+    int n = 7; 
+       // Adding edges to the tree 
+    addEdge(1, 2); 
+    addEdge(1, 3); 
+    addEdge(1, 4); 
+    addEdge(2, 5); 
+    addEdge(4, 6); 
+    addEdge(4, 7); 
+       // Calling the dfs function to 
+    // calculate the diameter of tree 
+    dfs(1, 0); 
+       cout << "Diameter of tree is : " << diameter - 1 
+         << "\n"; 
+       return 0; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+Diameter of tree is : 4
+Time Complexity: O(N), Where N is the number of nodes in given binary tree.
+Auxiliary Space: O(N)
+This article is contributed by Shubham Gupta. If you like GeeksforGeeks and would like to contribute, you can also write an article using write.geeksforgeeks.org or mail your article to review-team@geeksforgeeks.org. See your article appearing on the GeeksforGeeks main page and help other Geeks. 
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 12 Sep, 2023
+25

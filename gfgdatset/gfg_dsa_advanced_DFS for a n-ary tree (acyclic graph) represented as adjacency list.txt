@@ -1,0 +1,86 @@
+DFS for a n-ary tree (acyclic graph) represented as adjacency list
+Read
+Discuss
+Courses
+Practice
+A tree consisting of n nodes is given, we need to print its DFS.
+Examples : 
+Input : Edges of graph
+        1 2
+        1 3
+        2 4
+        3 5
+Output : 1 2 4 3 5
+A simple solution is to do implement standard DFS. 
+We can modify our approach to avoid extra space for visited nodes. Instead of using the visited array, we can keep track of parent. We traverse all adjacent nodes but the parent.
+Below is the implementation : 
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+/* CPP code to perform DFS of given tree : */
+#include <bits/stdc++.h>
+using namespace std;
+  // DFS on tree
+void dfs(vector<int> list[], int node, int arrival)
+{
+    // Printing traversed node
+    cout << node << '\n';
+      // Traversing adjacent edges
+    for (int i = 0; i < list[node].size(); i++) {
+          // Not traversing the parent node
+        if (list[node][i] != arrival)
+            dfs(list, list[node][i], node);
+    }
+}
+  int main()
+{
+    // Number of nodes
+    int nodes = 5;
+      // Adjacency list
+    vector<int> list[10000];
+      // Designing the tree
+    list[1].push_back(2);
+    list[2].push_back(1);
+      list[1].push_back(3);
+    list[3].push_back(1);
+      list[2].push_back(4);
+    list[4].push_back(2);
+      list[3].push_back(5);
+    list[5].push_back(3);
+      // Function call
+    dfs(list, 1, 0);
+      return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+1
+2
+4
+3
+5
+Time Complexity: O(V+E) where V is the number of nodes and E is the number of edges in the graph.
+Auxiliary space: O(10000)
+This article is contributed by Rohit Thapliyal. If you like GeeksforGeeks and would like to contribute, you can also write an article using write.geeksforgeeks.org or mail your article to review-team@geeksforgeeks.org. See your article appearing on the GeeksforGeeks main page and help other Geeks. 
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 14 Mar, 2023
+14

@@ -1,0 +1,361 @@
+How to Implement Reverse DNS Look Up Cache?
+Read
+Discuss
+Courses
+Practice
+Reverse DNS look up is using an internet IP address to find a domain name. For example, if you type 74.125.200.106 in browser, it automatically redirects to google.in. 
+How to implement Reverse DNS Look Up cache? Following are the operations needed from cache:
+Add an IP address to URL Mapping in cache.
+Find URL for a given IP address.
+One solution is to use Hashing. 
+In this post, a Trie based solution is discussed. One advantage of Trie based solutions is, the worst case upper bound is O(1) for Trie, for hashing, the best possible average case time complexity is O(1). Also, with Trie we can implement prefix search (finding all urls for a common prefix of IP addresses). 
+The general disadvantage of Trie is large amount of memory requirement, this is not a major problem here as the alphabet size is only 11 here. Ten characters are needed for digits from ‘0’ to ‘9’ and one for dot (‘.’). 
+The idea is to store IP addresses in Trie nodes and in the last node we store the corresponding domain name. Following is C style implementation in C++.
+  CPP
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ based program to implement reverse DNS lookup
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+  // There are atmost 11 different chars in a valid IP address
+#define CHARS 11
+  // Maximum length of a valid IP address
+#define MAX 50
+  // A utility function to find index of child for a given character 'c'
+int getIndex(char c) { return (c == '.')? 10: (c - '0'); }
+  // A utility function to find character for a given child index.
+char getCharFromIndex(int i) { return (i== 10)? '.' : ('0' + i); }
+  // Trie Node.
+struct trieNode
+{
+    bool isLeaf;
+    char *URL;
+    struct trieNode *child[CHARS];
+};
+  // Function to create a new trie node.
+struct trieNode *newTrieNode(void)
+{
+    struct trieNode *newNode = new trieNode;
+    newNode->isLeaf = false;
+    newNode->URL = NULL;
+    for (int i=0; i<CHARS; i++)
+        newNode->child[i] = NULL;
+    return newNode;
+}
+  // This method inserts an ip address and the corresponding
+// domain name in the trie. The last node in Trie contains the URL.
+void insert(struct trieNode *root, char *ipAdd, char *URL)
+{
+    // Length of the ip address
+    int len = strlen(ipAdd);
+    struct trieNode *pCrawl = root;
+      // Traversing over the length of the ip address.
+    for (int level=0; level<len; level++)
+    {
+        // Get index of child node from current character
+        // in ipAdd[].  Index must be from 0 to 10 where
+        // 0 to 9 is used for digits and 10 for dot
+        int index = getIndex(ipAdd[level]);
+          // Create a new child if not exist already
+        if (!pCrawl->child[index])
+            pCrawl->child[index] = newTrieNode();
+          // Move to the child
+        pCrawl = pCrawl->child[index];
+    }
+      //Below needs to be carried out for the last node.
+    //Save the corresponding URL of the ip address in the
+    //last node of trie.
+    pCrawl->isLeaf = true;
+    pCrawl->URL = new char[strlen(URL) + 1];
+    strcpy(pCrawl->URL, URL);
+}
+  // This function returns URL if given IP address is present in DNS cache.
+// Else returns NULL
+char  *searchDNSCache(struct trieNode *root, char *ipAdd)
+{
+    // Root node of trie.
+    struct trieNode *pCrawl = root;
+    int  len = strlen(ipAdd);
+      // Traversal over the length of ip address.
+    for (int level=0; level<len; level++)
+    {
+        int index = getIndex(ipAdd[level]);
+        if (!pCrawl->child[index])
+            return NULL;
+        pCrawl = pCrawl->child[index];
+    }
+      // If we find the last node for a given ip address, print the URL.
+    if (pCrawl!=NULL && pCrawl->isLeaf)
+        return pCrawl->URL;
+      return NULL;
+}
+  //Driver function.
+int main()
+{
+    /* Change third ipAddress for validation */
+    char ipAdd[][MAX] = {"107.108.11.123", "107.109.123.255",
+                         "74.125.200.106"};
+    char URL[][50] = {"www.samsung.com", "www.samsung.net",
+                      "www.google.in"};
+    int n = sizeof(ipAdd)/sizeof(ipAdd[0]);
+    struct trieNode *root = newTrieNode();
+      // Inserts all the ip address and their corresponding
+    // domain name after ip address validation.
+    for (int i=0; i<n; i++)
+        insert(root,ipAdd[i],URL[i]);
+      // If reverse DNS look up succeeds print the domain
+    // name along with DNS resolved.
+    char ip[] = "107.108.11.123";
+    char *res_url = searchDNSCache(root, ip);
+    if (res_url != NULL)
+        printf("Reverse DNS look up resolved in cache:\n%s --> %s",
+                ip, res_url);
+    else
+        printf("Reverse DNS look up not resolved in cache ");
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Output: 
+Reverse DNS look up resolved in cache:
+107.108.11.123 --> www.samsung.com
+  Time complexity- The time complexity of the insert function is O(k), where k is the length of the IP address being inserted. The searchDNSCache function also has a time complexity of O(k), as it traverses the trie for the given IP address.
+Space complexity – The space complexity of the program is O(nm), where n is the number of IP addresses and m is the length of the longest URL. This is because we are storing the URL for each IP address in the trie, which can take up to m space. Additionally, we are creating a new trie node for each level of the IP address, which can take up to 11 pointers and a boolean flag, or 12 units of space per node. Therefore, the total space complexity is O(nm12), or O(nm).
+Note that the above implementation of Trie assumes that the given IP address does not contain characters other than {‘0’, ‘1’,….. ‘9’, ‘.’}. What if a user gives an invalid IP address that contains some other characters? This problem can be resolved by validating the input IP address before inserting it into Trie. We can use the approach discussed here for IP address validation.
+Java implementation is given below: 
+  C++
+Java
+Python3
+Javascript
+C#
+
+
+
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+  using namespace std;
+  class TrieNode {
+public:
+    unordered_map<char, TrieNode*> child;
+    string url;
+      TrieNode() { this->url = ""; }
+      ~TrieNode()
+    {
+        for (auto it = child.begin(); it != child.end();
+             ++it) {
+            delete it->second;
+        }
+    }
+};
+  class ReverseDNSLookup {
+public:
+    void insert(TrieNode* node, vector<string> ipAdd,
+                vector<string> urls)
+    {
+        for (int i = 0; i < ipAdd.size(); ++i) {
+            insertUtil(node, ipAdd[i], urls[i], 0);
+        }
+    }
+      void insertUtil(TrieNode* node, string ipAddr,
+                    string url, int pos)
+    {
+        TrieNode* temp = nullptr;
+        if (node->child.find(ipAddr[pos])
+            != node->child.end()) {
+            temp = node->child[ipAddr[pos]];
+        }
+        else {
+            temp = new TrieNode();
+            node->child[ipAddr[pos]] = temp;
+        }
+        if (pos == ipAddr.size() - 1) {
+            temp->url = url;
+            return;
+        }
+        insertUtil(temp, ipAddr, url, pos + 1);
+    }
+      string search(TrieNode* node, string ipAddr, int pos)
+    {
+        TrieNode* temp = nullptr;
+        if (pos == ipAddr.size() - 1) {
+            if (node->child.find(ipAddr[pos])
+                != node->child.end()) {
+                temp = node->child[ipAddr[pos]];
+                if (!temp->url.empty()) {
+                    return temp->url;
+                }
+            }
+        }
+        if (node->child.find(ipAddr[pos])
+            != node->child.end()) {
+            temp = node->child[ipAddr[pos]];
+            return search(temp, ipAddr, pos + 1);
+        }
+        return "No url associated/Invalid IP address";
+    }
+};
+  int main()
+{
+    ReverseDNSLookup r;
+    vector<string> ipAdd
+        = { "107.108.11.123", "107.109.123.255",
+            "74.125.200.106" };
+    vector<string> urls
+        = { "www.samsung.com", "www.samsung.net",
+            "www.google.in" };
+      TrieNode* root = new TrieNode();
+    r.insert(root, ipAdd, urls);
+    cout << "74.125.200.106 : "
+         << r.search(root, "74.125.200.106", 0) << endl;
+    cout << "107.109.123.245 : "
+         << r.search(root, "107.109.123.245", 0) << endl;
+      delete root;
+      return 0;
+}
+// This code is contributed by prasad264
+
+
+
+
+
+
+
+
+
+
+
+
+Output: 
+74.125.200.106 : www.google.in
+107.109.123.245 : No url associated/Invalid IP address
+  Time Complexity:
+The insert() method has a time complexity of O(nm), where n is the number of IP addresses and m is the length of the IP address string.
+The search() method has a time complexity of O(m), where m is the length of the IP address string.
+Space Complexity:
+The space complexity of the TrieNode class is O(k * n), where k is the average length of the URL and n is the number of URLs.
+The space complexity of the ReverseDNSLookup class is O(1) since it only contains methods and no additional variables.
+The overall space complexity of the program is O(k * n), where k is the average length of the URL and n is the number of URLs.
+Python3 Implementation: 
+  C++
+Java
+Python3
+Javascript
+C#
+
+
+
+// C++ Program for the above approach
+#include <bits/stdc++.h>
+using namespace std;
+  // Trie Node structure
+class TrieNode {
+public:
+    vector<TrieNode*> child;
+    string url;
+    bool is_end;
+      TrieNode() {
+        child.resize(11);
+        for (int i = 0; i < 11; i++) {
+            child[i] = nullptr;
+        }
+        url = "";
+        is_end = false;
+    }
+};
+  class Trie {
+public:
+    TrieNode* root;
+      Trie() {
+        root = new TrieNode();
+    }
+      int getIndex(char c) {
+        // For the . (dot) in IP address, we'll use the 10th index in child list
+        return c == '.' ? 10 : c - '0';
+    }
+      void insert(string ip, string domain) {
+        TrieNode* cur = root;
+        int n = ip.length();
+          for (int level = 0; level < n; level++) {
+            int idx = getIndex(ip[level]);
+              if (cur->child[idx] == nullptr) {
+                // Create a new trie node if not available for a particular digit
+                // and assign to the respective index
+                cur->child[idx] = new TrieNode();
+            }
+              cur = cur->child[idx];
+        }
+        // At the end, we'll map the domain name and mark the end node
+        cur->url = domain;
+        cur->is_end = true;
+    }
+        // function for search domain
+    string search_domain(string ip) {
+        TrieNode* cur = root;
+        int n = ip.length();
+        // We'll use the digits of IP address to form the trie structure
+        for (int level = 0; level < n; level++) {
+            int idx = getIndex(ip[level]);
+            if (cur->child[idx] == nullptr) {
+                return "Domain name not found";
+            }
+              cur = cur->child[idx];
+        }
+        // Returns the url when all the digits in ip found
+        if (cur && !cur->url.empty()) {
+            return cur->url;
+        }
+          return "Domain name not found";
+    }
+};
+  // driver code to test above functions
+int main() {
+    vector<string> ip = {"107.108.11.123", "107.109.123.255", "74.125.200.106"};
+    vector<string> domain = {"www.samsung.com", "www.samsung.net", "www.google.co.in"};
+      Trie trie;
+    for(int idx = 0; idx < ip.size(); idx++)
+        trie.insert(ip[idx], domain[idx]);
+        // function call
+    cout << trie.search_domain("107.109.123.255") << endl;
+    cout << trie.search_domain("107.109.123.245") << endl;
+      return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Output: 
+www.samsung.net
+Domain name not found
+  This article is contributed by Kumar Gautam. Please write comments if you find anything incorrect, or you want to share more information about the topic discussed above
+ 
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 25 Apr, 2023
+3

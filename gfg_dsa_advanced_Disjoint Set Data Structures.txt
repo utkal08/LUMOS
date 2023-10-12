@@ -1,0 +1,53 @@
+Disjoint Set Data Structures
+Read
+Discuss
+Courses
+Practice
+A disjoint-set data structure is defined as one that keeps track of a set of elements partitioned into a number of disjoint (non-overlapping) subsets.
+A union-find algorithm is an algorithm that performs two useful operations on such a data structure:
+Find: Determine which subset a particular element is in. This can determine if two elements are in the same subset.
+Union: Join two subsets into a single subset. Here first we have to check if the two subsets belong to the same set. If not, then we cannot perform union. 
+Applications of Disjoint set Union: 
+S. No.
+Problem
+Practice link
+1
+Kruskal’s Minimum Spanning Tree Algorithm.
+solve
+2
+Job Sequencing Problem.
+solve
+3
+Cycle Detection
+solve
+4
+Number of pairs
+solve
+5
+City With the Smallest Number of Neighbors at a Threshold Distance
+solve
+Practice problems for DSU:
+Problem
+Difficulty
+Difference between Smallest and Largest Component of the graph after each Query
+Easy
+Equation satisfiability check
+Easy
+Evaluate the Fractions
+Medium
+Substring segment query & modification
+Medium
+Maximum number of soldier in a team
+Medium
+Minimum difference between components of the Graph after each query
+Hard
+Minimum cost to provide water
+Hard
+Minimum operations for adjacent E and E+1 pairing
+Hard
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 22 Sep, 2023
+102

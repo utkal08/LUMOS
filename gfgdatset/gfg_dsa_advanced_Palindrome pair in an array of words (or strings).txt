@@ -1,0 +1,333 @@
+Palindrome pair in an array of words (or strings)
+Read
+Discuss(30+)
+Courses
+Practice
+Given a list of words, find if any of the two words can be joined to form a palindrome.
+Examples: 
+Input  : list[] = {"geekf", "geeks", "or", 
+                            "keeg", "abc", "bc"}
+Output : Yes
+There is a pair "geekf" and "keeg"
+
+Input : list[] =  {"abc", "xyxcba", "geekst", "or",
+                                      "keeg", "bc"}
+Output : Yes
+There is a pair "abc" and "xyxcba"
+Asked in : Google Interview 
+Recommended: Please solve it on “PRACTICE” first, before moving on to the solution.
+Simple approach: 
+1- Consider each pair one by one.
+2- Check if any of the pairs forms a palindrome
+   after concatenating them.
+3- Return true, if any such pair exists.
+4- Else, return false.
+Implementation:
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program to find if there is a pair that 
+// can form a palindrome. 
+#include<bits/stdc++.h> 
+using namespace std; 
+   // Utility function to check if a string is a 
+// palindrome 
+bool isPalindrome(string str) 
+{ 
+    int len = str.length(); 
+       // compare each character from starting 
+    // with its corresponding character from last 
+    for (int i = 0; i < len/2; i++ ) 
+        if (str[i] != str[len-i-1]) 
+            return false; 
+       return true; 
+} 
+   // Function to check if a palindrome pair exists 
+bool checkPalindromePair(vector <string> vect) 
+{ 
+    // Consider each pair one by one 
+    for (int i = 0; i< vect.size()-1; i++) 
+    { 
+        for (int j = i+1; j< vect.size() ; j++) 
+        { 
+            string check_str; 
+               // concatenate both strings 
+            check_str = vect[i] + vect[j]; 
+               // check if the concatenated string is 
+            // palindrome 
+            if (isPalindrome(check_str)) 
+                return true; 
+               // check for other combination of the two strings 
+            check_str = vect[j] + vect[i]; 
+            if (isPalindrome(check_str)) 
+                return true; 
+        } 
+    } 
+    return false; 
+} 
+   // Driver code 
+int main() 
+{ 
+    vector <string> vect = {"geekf", "geeks", "or", 
+                            "keeg", "abc", "bc"}; 
+          checkPalindromePair(vect)? cout << "Yes" : 
+                               cout << "No"; 
+    return 0; 
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+Yes
+Time Complexity : O(n2k) 
+Here n is the number of words in the list and k is the maximum length that is checked for a palindrome.
+Auxiliary Space : O(1)
+Efficient method:
+It can be done efficiently by using the Trie data structure. The idea is to maintain a Trie of the reverse of all words. 
+1) Create an empty Trie.
+2) Do following for every word:-
+    a) Insert reverse of current word.
+    b) Also store up to which index it is 
+       a palindrome.
+3) Traverse list of words again and do following 
+   for every word.
+    a) If it is available in Trie then return true
+    b) If it is partially available
+         Check the remaining word is palindrome or not 
+         If yes then return true that means a pair
+         forms a palindrome.
+         Note: Position upto which the word is palindrome
+               is stored because of these type of cases.
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program to check if there is a pair that 
+// of above method using Trie 
+#include<bits/stdc++.h> 
+using namespace std; 
+#define ARRAY_SIZE(a) sizeof(a)/sizeof(a[0]) 
+   // Alphabet size (# of symbols) 
+#define ALPHABET_SIZE (26) 
+   // Converts key current character into index 
+// use only 'a' through 'z' and lower case 
+#define CHAR_TO_INDEX(c) ((int)c - (int)'a') 
+   // Trie node 
+struct TrieNode 
+{ 
+    struct TrieNode *children[ALPHABET_SIZE]; 
+    vector<int> pos; // To store palindromic 
+                     // positions in str 
+    int id; 
+       // isLeaf is true if the node represents 
+    // end of a word 
+    bool isLeaf; 
+}; 
+   // Returns new Trie node (initialized to NULLs) 
+struct TrieNode *getNode(void) 
+{ 
+    struct TrieNode *pNode = new TrieNode; 
+    pNode->isLeaf = false; 
+    for (int i = 0; i < ALPHABET_SIZE; i++) 
+            pNode->children[i] = NULL; 
+       return pNode; 
+} 
+   // Utility function to check if a string is a 
+// palindrome 
+bool isPalindrome(string str, int i, int len) 
+{ 
+    // compare each character from starting 
+    // with its corresponding character from last 
+    while (i < len) 
+    { 
+        if (str[i] != str[len]) 
+            return false; 
+        i++, len--; 
+    } 
+       return true; 
+} 
+   // If not present, inserts reverse of key into Trie. If  
+// the key is prefix of a Trie node, just mark leaf node 
+void insert(struct TrieNode* root, string key, int id) 
+{ 
+    struct TrieNode *pCrawl = root; 
+       // Start traversing word from the last 
+    for (int level = key.length()-1; level >=0; level--) 
+    { 
+        // If it is not available in Trie, then 
+        // store it 
+        int index = CHAR_TO_INDEX(key[level]); 
+        if (!pCrawl->children[index]) 
+            pCrawl->children[index] = getNode(); 
+           // If current word is palindrome till this 
+        // level, store index of current word. 
+        if (isPalindrome(key, 0, level)) 
+            (pCrawl->pos).push_back(id); 
+           pCrawl = pCrawl->children[index]; 
+    } 
+    pCrawl->id = id; 
+    pCrawl->pos.push_back(id); 
+       // mark last node as leaf 
+    pCrawl->isLeaf = true; 
+} 
+   // Returns true if key presents in Trie, else false 
+void search(struct TrieNode *root, string key, 
+            int id, vector<vector<int> > &result) 
+{ 
+    struct TrieNode *pCrawl = root; 
+    for (int level = 0; level < key.length(); level++) 
+    { 
+        int index = CHAR_TO_INDEX(key[level]); 
+           // If it is present also check upto which index 
+        // it is palindrome 
+        if (pCrawl->id >= 0 && pCrawl->id != id && 
+            isPalindrome(key, level, key.size()-1)) 
+            result.push_back({id, pCrawl->id}); 
+           // If not present then return 
+        if (!pCrawl->children[index]) 
+            return; 
+           pCrawl = pCrawl->children[index]; 
+    } 
+       for (int i: pCrawl->pos) 
+    { 
+        if (i == id) 
+            continue; 
+        result.push_back({id, i}); 
+    } 
+} 
+   // Function to check if a palindrome pair exists 
+bool checkPalindromePair(vector <string> vect) 
+{ 
+    // Construct trie 
+    struct TrieNode *root = getNode(); 
+    for (int i = 0; i < vect.size(); i++) 
+        insert(root, vect[i], i); 
+       // Search for different keys 
+    vector<vector<int> > result; 
+    for (int i=0; i<vect.size(); i++) 
+    { 
+        search(root, vect[i], i, result); 
+        if (result.size() > 0) 
+           return true; 
+    } 
+       return false; 
+} 
+   // Driver code 
+int main() 
+{ 
+    vector <string> vect = {"geekf", "geeks", "or", 
+                            "keeg", "abc", "bc"}; 
+          checkPalindromePair(vect)? cout << "Yes" : 
+                               cout << "No"; 
+    return 0; 
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+Yes
+Time Complexity: O(nk2), Where n is the number of words in the list and k is the maximum length that is checked for palindrome.
+Auxiliary Space: O(1)
+Method 3:
+Below given is a program which is based upon the above discussed algorithm, but instead of trie it uses hashmap datastructure for giving efficient storage and retrieval method.
+Hence it reduces complexity a lot.
+Implementation:
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program for above method  
+#include <bits/stdc++.h> 
+using namespace std; 
+   bool Function(vector<string> wordlist)  
+{ 
+  // storing word in reverse format along with their indices. 
+  unordered_map<string, int> hashmap_reverse; 
+  vector<pair<int, int>> ans; 
+  for (int i = 0; i < wordlist.size(); i++) { 
+    string word = wordlist[i]; 
+    string reverse_word = string(word.rbegin(), word.rend()); 
+    hashmap_reverse[reverse_word] = i; 
+  } 
+     // enumerating over all words and for each character of them 
+  for (int i = 0; i < wordlist.size(); i++) { 
+    string word = wordlist[i]; 
+    for (int j = 0; j < word.size(); j++) { 
+      // #extracting left and right of them 
+      string left = word.substr(0, j + 1); 
+      string right = word.substr(j + 1); 
+      // checking if left exists and is palindrome and also right is present in map 
+      // this is to make sure the best edge case described holds. 
+      if (!left.empty() && left == string(left.rbegin(), left.rend()) && hashmap_reverse.count(right) && hashmap_reverse[right] != i) { 
+        ans.emplace_back(hashmap_reverse[right], i); 
+      } 
+      // normal case. 
+      if (right == string(right.rbegin(), right.rend()) && hashmap_reverse.count(left) && hashmap_reverse[left] != i) { 
+        ans.emplace_back(i, hashmap_reverse[left]); 
+      } 
+    } 
+  } 
+  return ans.empty() ? false : true; 
+} 
+   int main() { 
+  vector<string> words = {"geekf", "geeks", "or","keeg", "abc", "bc"}; 
+  (Function(words)==true)? cout <<  "True" : cout<< "False" ; 
+  cout<< endl; 
+  return 0; 
+} 
+   // This code is contributed by Aman Kumar.
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+True
+Time Complexity: O(nl2) where n = length of array and l =  length of longest string.
+Auxiliary Space: O(n)
+This article is contributed by Sahil Chhabra . If you like GeeksforGeeks and would like to contribute, you can also write an article using write.geeksforgeeks.org or mail your article to review-team@geeksforgeeks.org. See your article appearing on the GeeksforGeeks main page and help other Geeks.
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 13 Sep, 2023
+18

@@ -1,0 +1,184 @@
+Generic Linked List in C
+Read
+Discuss(50+)
+Courses
+Practice
+Introduction:
+A reference book is a type of non-fictional book that provides detailed information on a specific subject or topic. It typically contains facts, figures, and explanations on a wide range of topics, presented in a logical and organized manner. Reference books are often used as a source of information for research, academic or professional purposes.
+Advantages:
+Comprehensive Information: Reference books provide comprehensive information on a particular subject, making them valuable resources for research, study, or work.
+Authoritative Sources: Reference books are usually written by experts in their fields, which ensures that the information presented is accurate and reliable.
+Quick Access: Reference books are designed for quick access to specific information, which makes them ideal for quick lookups and fact-checking.
+Durability: Most reference books are durable and designed to last a long time, which means they can be used over and over again.
+Disadvantages:
+Outdated Information: Due to the rapidly changing nature of some subjects, some reference books may contain outdated information.
+Limited Coverage: Some reference books may not cover all aspects of a particular subject, which may limit their usefulness in some cases.
+Expensive: Reference books can be expensive, especially if they are highly specialized or contain a large amount of information.
+Limited Portability: 
+  Reference books 
+are often large and heavy, which makes them difficult to carry around, limiting their portability.
+In summary, reference books provide a wealth of information on specific topics, and their authoritative sources make them valuable for research, study, and work. However, they can be expensive, limited in coverage, and difficult to carry around, and may contain outdated information.
+Examples;
+C
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+  typedef struct node {
+    void* data;
+    struct node* next;
+} Node;
+  typedef struct list {
+    int size;
+    Node* head;
+} List;
+  List* create_list() {
+    List* new_list = (List*)malloc(sizeof(List));
+    new_list->size = 0;
+    new_list->head = NULL;
+    return new_list;
+}
+  void add_to_list(List* list, void* data) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->data = data;
+    new_node->next = list->head;
+    list->head = new_node;
+    list->size++;
+}
+  void* remove_from_list(List* list) {
+    if (list->size == 0) {
+        return NULL;
+    }
+    Node* node_to_remove = list->head;
+    void* data = node_to_remove->data;
+    list->head = node_to_remove->next;
+    free(node_to_remove);
+    list->size--;
+    return data;
+}
+  void free_list(List* list) {
+    Node* current_node = list->head;
+    while (current_node != NULL) {
+        Node* next_node = current_node->next;
+        free(current_node);
+        current_node = next_node;
+    }
+    free(list);
+}
+  int main() {
+    // create a new list
+    List* int_list = create_list();
+          // add some integers to the list
+    int x = 42;
+    add_to_list(int_list, (void*)&x);
+    int y = 13;
+    add_to_list(int_list, (void*)&y);
+    int z = 99;
+    add_to_list(int_list, (void*)&z);
+          // remove the integers from the list and print them
+    int* int_ptr = NULL;
+    while ((int_ptr = (int*)remove_from_list(int_list)) != NULL) {
+        printf("%d\n", *int_ptr);
+    }
+          // free the memory used by the list
+    free_list(int_list);
+          return 0;
+}
+Output
+99
+13
+42
+Time complexity-The time complexity of adding an element to the beginning of the linked list using add_to_list function is O(1), as it only requires creating a new node and updating the head pointer.
+The time complexity of removing an element from the beginning of the linked list using remove_from_list function is also O(1), as it only requires updating the head pointer and freeing the memory of the removed node.
+Space complexity-The space complexity of the linked list implementation is proportional to the number of elements in the list. For each element added to the list, a new node is created using dynamic memory allocation, and this node contains a pointer to the data. Therefore, the space complexity is O(n), where n is the number of elements in the list.
+Unlike C++ and Java, C doesn’t support generics. How to create a linked list in C that can be used for any data type? In C, we can use a void pointer and a function pointer to implement the same functionality. The great thing about void pointer is it can be used to point to any data type. Also, the size of all types of pointers is always is same, so we can always allocate a linked list node. Function pointer is needed to process actual content stored at the address pointed by the void pointer. 
+Following is a sample C code to demonstrate the working of a generic linked list.
+C
+
+
+
+// C program for generic linked list
+#include<stdio.h>
+#include<stdlib.h>
+  /* A linked list node */
+struct Node
+{
+    // Any data type can be stored in this node
+    void  *data;
+      struct Node *next;
+};
+  /* Function to add a node at the beginning of Linked List.
+   This function expects a pointer to the data to be added
+   and size of the data type */
+void push(struct Node** head_ref, void *new_data, size_t data_size)
+{
+    // Allocate memory for node
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
+      new_node->data  = malloc(data_size);
+    new_node->next = (*head_ref);
+      // Copy contents of new_data to newly allocated memory.
+    // Assumption: char takes 1 byte.
+    int i;
+    for (i=0; i<data_size; i++)
+        *(char *)(new_node->data + i) = *(char *)(new_data + i);
+      // Change head pointer as new node is added at the beginning
+    (*head_ref)    = new_node;
+}
+  /* Function to print nodes in a given linked list. fpitr is used
+   to access the function to be used for printing current node data.
+   Note that different data types need different specifier in printf() */
+void printList(struct Node *node, void (*fptr)(void *))
+{
+    while (node != NULL)
+    {
+        (*fptr)(node->data);
+        node = node->next;
+    }
+}
+  // Function to print an integer
+void printInt(void *n)
+{
+   printf(" %d", *(int *)n);
+}
+  // Function to print a float
+void printFloat(void *f)
+{
+   printf(" %f", *(float *)f);
+}
+  /* Driver program to test above function */
+int main()
+{
+    struct Node *start = NULL;
+      // Create and print an int linked list
+    unsigned int_size = sizeof(int);
+    int arr[] = {10, 20, 30, 40, 50}, i;
+    for (i=4; i>=0; i--)
+       push(&start, &arr[i], int_size);
+    printf("Created integer linked list is \n");
+    printList(start, printInt);
+      // Create and print a float linked list
+    unsigned float_size = sizeof(float);
+    start = NULL;
+    float arr2[] = {10.1, 20.2, 30.3, 40.4, 50.5};
+    for (i=4; i>=0; i--)
+       push(&start, &arr2[i], float_size);
+    printf("\n\nCreated float linked list is \n");
+    printList(start, printFloat);
+      return 0;
+}
+Output
+Created integer linked list is 
+ 10 20 30 40 50
+
+Created float linked list is 
+ 10.100000 20.200001 30.299999 40.400002 50.500000
+Time Complexity : O(n), here n is number of nodes in linked list. 
+Auxiliary Space :O(1)
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 28 Apr, 2023
+62

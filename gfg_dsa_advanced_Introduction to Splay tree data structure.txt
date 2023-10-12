@@ -1,0 +1,205 @@
+Introduction to Splay tree data structure
+Read
+Discuss
+Courses
+Practice
+Splay tree is a self-adjusting binary search tree data structure, which means that the tree structure is adjusted dynamically based on the accessed or inserted elements. In other words, the tree automatically reorganizes itself so that frequently accessed or inserted elements become closer to the root node.
+The splay tree was first introduced by Daniel Dominic Sleator and Robert Endre Tarjan in 1985. It has a simple and efficient implementation that allows it to perform search, insertion, and deletion operations in O(log n) amortized time complexity, where n is the number of elements in the tree.
+The basic idea behind splay trees is to bring the most recently accessed or inserted element to the root of the tree by performing a sequence of tree rotations, called splaying. Splaying is a process of restructuring the tree by making the most recently accessed or inserted element the new root and gradually moving the remaining nodes closer to the root.
+Splay trees are highly efficient in practice due to their self-adjusting nature, which reduces the overall access time for frequently accessed elements. This makes them a good choice for applications that require fast and dynamic data structures, such as caching systems, data compression, and network routing algorithms.
+However, the main disadvantage of splay trees is that they do not guarantee a balanced tree structure, which may lead to performance degradation in worst-case scenarios. Also, splay trees are not suitable for applications that require guaranteed worst-case performance, such as real-time systems or safety-critical systems.
+Overall, splay trees are a powerful and versatile data structure that offers fast and efficient access to frequently accessed or inserted elements. They are widely used in various applications and provide an excellent tradeoff between performance and simplicity.
+A splay tree is a self-balancing binary search tree, designed for efficient access to data elements based on their key values.
+The key feature of a splay tree is that each time an element is accessed, it is moved to the root of the tree, creating a more balanced structure for subsequent accesses.
+Splay trees are characterized by their use of rotations, which are local transformations of the tree that change its shape but preserve the order of the elements.
+Rotations are used to bring the accessed element to the root of the tree, and also to rebalance the tree if it becomes unbalanced after multiple accesses.
+Operations in a splay tree:
+Insertion: To insert a new element into the tree, start by performing a regular binary search tree insertion. Then, apply rotations to bring the newly inserted element to the root of the tree.
+Deletion: To delete an element from the tree, first locate it using a binary search tree search. Then, if the element has no children, simply remove it. If it has one child, promote that child to its position in the tree. If it has two children, find the successor of the element (the smallest element in its right subtree), swap its key with the element to be deleted, and delete the successor instead.
+Search: To search for an element in the tree, start by performing a binary search tree search. If the element is found, apply rotations to bring it to the root of the tree. If it is not found, apply rotations to the last node visited in the search, which becomes the new root.
+Rotation: The rotations used in a splay tree are either a Zig or a Zig-Zig rotation. A Zig rotation is used to bring a node to the root, while a Zig-Zig rotation is used to balance the tree after multiple accesses to elements in the same subtree.
+Here’s a step-by-step explanation of the rotation operations:
+Zig Rotation: If a node has a right child, perform a right rotation to bring it to the root. If it has a left child, perform a left rotation.
+Zig-Zig Rotation: If a node has a grandchild that is also its child’s right or left child, perform a double rotation to balance the tree. For example, if the node has a right child and the right child has a left child, perform a right-left rotation. If the node has a left child and the left child has a right child, perform a left-right rotation.
+Note: The specific implementation details, including the exact rotations used, may vary depending on the exact form of the splay tree.
+Rotations in Splay Tree
+Zig Rotation
+Zag Rotation
+Zig – Zig Rotation
+Zag – Zag Rotation
+Zig – Zag Rotation
+Zag – Zig Rotation
+1) Zig Rotation:
+The Zig Rotation in splay trees operates in a manner similar to the single right rotation in AVL Tree rotations. This rotation results in nodes moving one position to the right from their current location. For example, consider the following scenario:
+Zig Rotation (Single Rotation)
+2) Zag Rotation:
+The Zag Rotation in splay trees operates in a similar fashion to the single left rotation in AVL Tree rotations. During this rotation, nodes shift one position to the left from their current location. For instance, consider the following illustration:
+Zag Rotation (Single left Rotation)
+ 3) Zig-Zig Rotation:
+The Zig-Zig Rotation in splay trees is a double zig rotation. This rotation results in nodes shifting two positions to the right from their current location. Take a look at the following example for a better understanding:
+Zig-Zig Rotation (Double Right Rotation)
+4) Zag-Zag Rotation:
+In splay trees, the Zag-Zag Rotation is a double zag rotation. This rotation causes nodes to move two positions to the left from their present position. For example:
+Zag-Zag Rotation (Double left rotation)
+5) Zig-Zag Rotation:
+The Zig-Zag Rotation in splay trees is a combination of a zig rotation followed by a zag rotation. As a result of this rotation, nodes shift one position to the right and then one position to the left from their current location. The following illustration provides a visual representation of this concept:
+Zig- Zag rotation
+6) Zag-Zig Rotation:
+The Zag-Zig Rotation in splay trees is a series of zag rotations followed by a zig rotation. This results in nodes moving one position to the left, followed by a shift one position to the right from their current location. The following illustration offers a visual representation of this concept:
+Zag-Zig Rotation
+Below is the C++ code to implement rotations in the Splay tree:
+C++
+Java
+C#
+Python3
+Javascript
+
+
+
+// C++ code for the above approach:
+#include <bits/stdc++.h>
+using namespace std;
+  struct node {
+    int key;
+    node *left, *right;
+};
+  node* newNode(int key)
+{
+    node* temp = new node;
+    temp->key = key;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+  node* rightRotate(node* x)
+{
+    node* y = x->left;
+    x->left = y->right;
+    y->right = x;
+    return y;
+}
+  node* leftRotate(node* x)
+{
+    node* y = x->right;
+    x->right = y->left;
+    y->left = x;
+    return y;
+}
+  node* splay(node* root, int key)
+{
+    if (root == NULL || root->key == key)
+        return root;
+      if (root->key > key) {
+        if (root->left == NULL)
+            return root;
+        if (root->left->key > key) {
+            root->left->left = splay(root->left->left, key);
+            root = rightRotate(root);
+        }
+        else if (root->left->key < key) {
+            root->left->right
+                = splay(root->left->right, key);
+            if (root->left->right != NULL)
+                root->left = leftRotate(root->left);
+        }
+        return (root->left == NULL) ? root
+                                    : rightRotate(root);
+    }
+    else {
+        if (root->right == NULL)
+            return root;
+        if (root->right->key > key) {
+            root->right->left
+                = splay(root->right->left, key);
+            if (root->right->left != NULL)
+                root->right = rightRotate(root->right);
+        }
+        else if (root->right->key < key) {
+            root->right->right
+                = splay(root->right->right, key);
+            root = leftRotate(root);
+        }
+        return (root->right == NULL) ? root
+                                     : leftRotate(root);
+    }
+}
+  node* insert(node* root, int key)
+{
+    if (root == NULL)
+        return newNode(key);
+      root = splay(root, key);
+      if (root->key == key)
+        return root;
+      node* temp = newNode(key);
+    if (root->key > key) {
+        temp->right = root;
+        temp->left = root->left;
+        root->left = NULL;
+    }
+    else {
+        temp->left = root;
+        temp->right = root->right;
+        root->right = NULL;
+    }
+    return temp;
+}
+  // Drivers code
+int main()
+{
+    node* root = NULL;
+    root = insert(root, 100);
+    root = insert(root, 50);
+    root = insert(root, 200);
+    root = insert(root, 40);
+    root = insert(root, 60);
+    cout << "Preorder traversal of the modified Splay "
+            "tree: \n";
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+Preorder traversal of the modified Splay tree: 
+Drawbacks of splay tree data structure:
+Unbalanced Trees: Splay trees can become unbalanced and inefficient if the tree is repeatedly rotated in the same direction.
+Memory Usage: Splay trees can use a lot of memory compared to other data structures because each node contains additional information.
+Complexity: Splay trees can have a high time complexity for basic operations such as insertion and deletion because the trees need to be reorganized after every operation.
+Reorganization Overhead: The splaying operation required in every operation can be time-consuming and result in a high overhead.
+Limited Use Cases: Splay trees are not suitable for all data structures and have limited use cases because they don’t handle duplicate keys efficiently.
+Applications of the splay tree:
+Caching: Splay trees can be used to implement cache memory management, where the most frequently accessed items are moved to the top of the tree for quicker access.
+Database Indexing: Splay trees can be used to index databases for faster searching and retrieval of data.
+File Systems: Splay trees can be used to store file system metadata, such as the allocation table, directory structure, and file attributes.
+Data Compression: Splay trees can be used to compress data by identifying and encoding repeating patterns.
+Text Processing: Splay trees can be used in text processing applications, such as spell-checkers, where words are stored in a splay tree for quick searching and retrieval.
+Graph Algorithms: Splay trees can be used to implement graph algorithms, such as finding the shortest path in a weighted graph.
+Online Gaming: Splay trees can be used in online gaming to store and manage high scores, leaderboards, and player statistics.
+Sure, here are some advantages and disadvantages of splay trees, as well as some recommended books for learning more about the topic:
+Advantages of Splay Trees:
+Splay trees have amortized time complexity of O(log n) for many operations, making them faster than many other balanced tree data structures in some cases.
+Splay trees are self-adjusting, meaning that they automatically balance themselves as items are inserted and removed. This can help to avoid the performance degradation that can occur when a tree becomes unbalanced.
+Disadvantages of Splay Trees:
+Splay trees can have worst-case time complexity of O(n) for some operations, making them less predictable than other balanced tree data structures like AVL trees or red-black trees.
+Splay trees may not be suitable for certain applications where predictable performance is required.
+Recommended books on Splay Trees:
+“Data Structures and Algorithm Analysis in Java” by Mark Allen Weiss
+“Introduction to Algorithms” by Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein
+“Data Structures and Algorithms in C++” by Michael T. Goodrich and Roberto Tamassia
+Conclusion:
+In conclusion, Splay Trees are a dynamic self-balancing binary search tree data structure that provides an efficient way of searching, inserting, and deleting elements. They differ from traditional balanced binary search trees like AVL and Red-Black trees, as they reorganize the tree after each operation to bring the recently accessed node to the root. This helps to reduce the height of the tree and results in faster operations. Splay Trees are highly flexible and can be adapted to various use cases. Although they may have a higher overhead in terms of rotations, their simplicity and versatility make them useful tools for solving a wide range of problems.
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 19 Apr, 2023
+6

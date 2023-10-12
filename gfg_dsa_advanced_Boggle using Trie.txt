@@ -1,0 +1,371 @@
+Boggle using Trie
+Read
+Discuss(50+)
+Courses
+Practice
+Given a dictionary, a method to do a lookup in the dictionary and a M x N board where every cell has one character. Find all possible words that can be formed by a sequence of adjacent characters. Note that we can move to any of 8 adjacent characters, but a word should not have multiple instances of the same cell.
+Example: 
+  Input: dictionary[] = {"GEEKS", "FOR", "QUIZ", "GO"};
+       boggle[][]   = {{'G', 'I', 'Z'},
+                       {'U', 'E', 'K'},
+                       {'Q', 'S', 'E'}};
+
+Output: Following words of the dictionary are present
+         GEEKS
+         QUIZ
+
+Explanation:
+Input: dictionary[] = {"GEEKS", "ABCFIHGDE"};
+       boggle[][]   = {{'A', 'B', 'C'},
+                       {'D', 'E', 'F'},
+                       {'G', 'H', 'I'}};
+Output: Following words of the dictionary are present
+         ABCFIHGDE     
+Explanation:
+  We have discussed a Graph DFS based solution in below post. 
+Boggle (Find all possible words in a board of characters) | Set 1
+Here we discuss a Trie based solution which is better than DFS based solution. 
+Given Dictionary dictionary[] = {“GEEKS”, “FOR”, “QUIZ”, “GO”} 
+1. Create an Empty trie and insert all words of given dictionary into trie 
+  After insertion, Trie looks like(leaf nodes are in RED)
+                       root
+                    /       
+                    G   F     Q
+                 /  |   |     |
+                O   E   O     U
+                    |   |     |
+                    E    R     I
+                    |         |  
+                    K         Z 
+                    |   
+                    S   
+2. After that we have pick only those character in boggle[][] which are child of root of Trie 
+Let for above we pick ‘G’ boggle[0][0], ‘Q’ boggle[2][0] (they both are present in boggle matrix) 
+3. search a word in a trie which start with character that we pick in step 2 
+  1) Create bool visited boolean matrix (Visited[M][N] = false )
+2) Call SearchWord() for every cell (i, j) which has one of the
+   first characters of dictionary words. In above example,
+   we have 'G' and 'Q' as first characters.
+
+SearchWord(Trie *root, i, j, visited[][N])
+if root->leaf == true 
+   print word 
+
+if we have seen this element first time then make it visited.
+   visited[i][j] = true
+   do
+      traverse all child of current root 
+      k goes (0 to 26 ) [there are only 26 Alphabet] 
+      add current char and search for next character 
+
+      find next character which is adjacent to boggle[i][j]
+      they are 8 adjacent cells of boggle[i][j] (i+1, j+1), 
+      (i+1, j) (i-1, j) and so on.
+   
+   make it unvisited visited[i][j] = false 
+Below is the implementation of above idea: 
+  C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program for Boggle game
+#include <bits/stdc++.h>
+using namespace std;
+  // Converts key current character into index
+// use only 'A' through 'Z'
+#define char_int(c) ((int)c - (int)'A')
+  // Alphabet size
+#define SIZE (26)
+  #define M 3
+#define N 3
+  // trie Node
+struct TrieNode {
+    TrieNode* Child[SIZE];
+      // isLeaf is true if the node represents
+    // end of a word
+    bool leaf;
+};
+  // Returns new trie node (initialized to NULLs)
+TrieNode* getNode()
+{
+    TrieNode* newNode = new TrieNode;
+    newNode->leaf = false;
+    for (int i = 0; i < SIZE; i++)
+        newNode->Child[i] = NULL;
+    return newNode;
+}
+  // If not present, inserts a key into the trie
+// If the key is a prefix of trie node, just
+// marks leaf node
+void insert(TrieNode* root, char* Key)
+{
+    int n = strlen(Key);
+    TrieNode* pChild = root;
+      for (int i = 0; i < n; i++) {
+        int index = char_int(Key[i]);
+          if (pChild->Child[index] == NULL)
+            pChild->Child[index] = getNode();
+          pChild = pChild->Child[index];
+    }
+      // make last node as leaf node
+    pChild->leaf = true;
+}
+  // function to check that current location
+// (i and j) is in matrix range
+bool isSafe(int i, int j, bool visited[M][N])
+{
+    return (i >= 0 && i < M && j >= 0 && j < N && !visited[i][j]);
+}
+  // A recursive function to print all words present on boggle
+void searchWord(TrieNode* root, char boggle[M][N], int i,
+                int j, bool visited[][N], string str)
+{
+    // if we found word in trie / dictionary
+    if (root->leaf == true)
+        cout << str << endl;
+      // If both I and j in  range and we visited
+    // that element of matrix first time
+    if (isSafe(i, j, visited)) {
+        // make it visited
+        visited[i][j] = true;
+          // traverse all childs of current root
+        for (int K = 0; K < SIZE; K++) {
+            if (root->Child[K] != NULL) {
+                // current character
+                char ch = (char)K + (char)'A';
+                  // Recursively search reaming character of word
+                // in trie for all 8 adjacent cells of boggle[i][j]
+                if (isSafe(i + 1, j + 1, visited)
+                    && boggle[i + 1][j + 1] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i + 1, j + 1, visited, str + ch);
+                if (isSafe(i, j + 1, visited)
+                    && boggle[i][j + 1] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i, j + 1, visited, str + ch);
+                if (isSafe(i - 1, j + 1, visited)
+                    && boggle[i - 1][j + 1] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i - 1, j + 1, visited, str + ch);
+                if (isSafe(i + 1, j, visited)
+                    && boggle[i + 1][j] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i + 1, j, visited, str + ch);
+                if (isSafe(i + 1, j - 1, visited)
+                    && boggle[i + 1][j - 1] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i + 1, j - 1, visited, str + ch);
+                if (isSafe(i, j - 1, visited)
+                    && boggle[i][j - 1] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i, j - 1, visited, str + ch);
+                if (isSafe(i - 1, j - 1, visited)
+                    && boggle[i - 1][j - 1] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i - 1, j - 1, visited, str + ch);
+                if (isSafe(i - 1, j, visited)
+                    && boggle[i - 1][j] == ch)
+                    searchWord(root->Child[K], boggle,
+                               i - 1, j, visited, str + ch);
+            }
+        }
+          // make current element unvisited
+        visited[i][j] = false;
+    }
+}
+  // Prints all words present in dictionary.
+void findWords(char boggle[M][N], TrieNode* root)
+{
+    // Mark all characters as not visited
+    bool visited[M][N];
+    memset(visited, false, sizeof(visited));
+      TrieNode* pChild = root;
+      string str = "";
+      // traverse all matrix elements
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
+            // we start searching for word in dictionary
+            // if we found a character which is child
+            // of Trie root
+            if (pChild->Child[char_int(boggle[i][j])]) {
+                str = str + boggle[i][j];
+                searchWord(pChild->Child[char_int(boggle[i][j])],
+                           boggle, i, j, visited, str);
+                str = "";
+            }
+        }
+    }
+}
+  // Driver program to test above function
+int main()
+{
+    // Let the given dictionary be following
+    char* dictionary[] = { "GEEKS", "FOR", "QUIZ", "GEE" };
+      // root Node of trie
+    TrieNode* root = getNode();
+      // insert all words of dictionary into trie
+    int n = sizeof(dictionary) / sizeof(dictionary[0]);
+    for (int i = 0; i < n; i++)
+        insert(root, dictionary[i]);
+      char boggle[M][N] = { { 'G', 'I', 'Z' },
+                          { 'U', 'E', 'K' },
+                          { 'Q', 'S', 'E' } };
+      findWords(boggle, root);
+      return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+GEE
+GEEKS
+QUIZ
+Complexity Analysis: 
+  Time complexity: O(4^(N^2)). 
+Even after applying trie the time complexity remains same. For every cell there are 4 directions and there are N^2 cells. So the time complexity is O(4^(N^2)).
+Auxiliary Space: O(N^2). 
+The maximum length of recursion can be N^2, where N is the side of the matrix. So the space Complexity is O(N^2).
+OPTIMIZED APPROACH WITHOUT USING TRIE ( Short and Easy to understand with a better Time and Space complexity):
+First, we create a Set Data Structure and add all word in it to avoid duplicate word.
+Then we make a new array of type String and add those set elements to it.
+We check word by word using a for loop whether that particular word is present in the board and if it returns true , we shall add it our ArrayList<String>.
+While searching for a word in the board,we shall use backtracking so that while coming back,we can alter the board as it was before.
+Lastly we sort the array and print it.
+C++
+Java
+Python3
+C#
+Javascript
+
+
+
+// C++ program for word Boggle
+#include <bits/stdc++.h>
+using namespace std;
+  bool exist(char board[][3], string word, int r, int c);
+bool search(char board[][3], string word, int len, int i,
+            int j, int r, int c);
+  vector<string> wordBoggle(char board[][3],
+                          vector<string> dictionary)
+{
+    int r = 3;
+    int c = 3;
+      vector<string> temp;
+    set<string> st(dictionary.begin(), dictionary.end());
+    int n = st.size();
+      string dict[n];
+      int id = 0;
+    for (string s : st)
+        dict[id++] = s;
+      for (int i = 0; i < n; i++) {
+        if (exist(board, dict[i], r, c))
+            temp.push_back(dict[i]);
+    }
+      return temp;
+}
+  bool exist(char board[][3], string word, int r, int c)
+{
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            if (board[i][j] == word[0]
+                && search(board, word, 0, i, j, r, c))
+                return true;
+        }
+    }
+    return false;
+}
+  bool search(char board[][3], string word, int len, int i,
+            int j, int r, int c)
+{
+    if (i < 0 || i >= r || j < 0 || j >= c)
+        return false;
+      if (board[i][j] != word[len])
+        return false;
+      if (len == word.length() - 1)
+        return true;
+      char ch = board[i][j];
+    board[i][j] = '@';
+      bool ans
+        = search(board, word, len + 1, i - 1, j, r, c)
+          || search(board, word, len + 1, i + 1, j, r, c)
+          || search(board, word, len + 1, i, j - 1, r, c)
+          || search(board, word, len + 1, i, j + 1, r, c)
+          || search(board, word, len + 1, i - 1, j + 1, r,
+                    c)
+          || search(board, word, len + 1, i - 1, j - 1, r,
+                    c)
+          || search(board, word, len + 1, i + 1, j - 1, r,
+                    c)
+          || search(board, word, len + 1, i + 1, j + 1, r,
+                    c);
+      board[i][j] = ch;
+    return ans;
+}
+  int main()
+{
+    vector<string> dictionary
+        = { "GEEKS", "FOR", "QUIZ", "GEE" };
+      char boggle[][3] = { { 'G', 'I', 'Z' },
+                         { 'U', 'E', 'K' },
+                         { 'Q', 'S', 'E' } };
+      vector<string> ans = wordBoggle(boggle, dictionary);
+      if (ans.size() == 0)
+        cout << "-1" << endl;
+    else {
+        sort(ans.begin(), ans.end());
+        for (int i = 0; i < ans.size(); i++) {
+            cout << ans[i] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
+  // Contributed by adityasha4x71
+
+
+
+
+
+
+
+
+
+
+
+
+Output
+GEE GEEKS QUIZ 
+Time Complexity: O(N*W + R*C^2)
+Space Complexity: O(N*W + R*C)
+  This article is contributed by Nishant Singh . If you like GeeksforGeeks and would like to contribute, you can also write an article using write.geeksforgeeks.org or mail your article to review-team@geeksforgeeks.org. See your article appearing on the GeeksforGeeks main page and help other Geeks.
+Please write comments if you find anything incorrect, or you want to share more information about the topic discussed above.
+
+Feeling lost in the world of random DSA topics, wasting time without progress? It's time for a change! Join our DSA course, where we'll guide you on an exciting journey to master DSA efficiently and on schedule.
+You'll access excellent video content by our CEO, Sandeep Jain, tackle common interview questions, and engage in real-time coding contests covering various DSA topics. We're here to prepare you thoroughly for online assessments and interviews.
+Ready to dive in? Explore our free demo content and join our DSA course, trusted by over 100,000 geeks! Whether it's DSA in C++, Java, Python, or JavaScript we've got you covered. Let's embark on this exciting journey together!
+
+Last Updated : 20 Apr, 2023
+42
+Recommended Problem
+Word Boggle - II
+Recursion
+DFS
++5 more
+Amazon
+Microsoft
++6 more
+Solve Problem
+Submission count: 7.1K
